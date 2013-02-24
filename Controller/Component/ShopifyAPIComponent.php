@@ -19,7 +19,8 @@ class ShopifyAPIComponent extends Component {
 	}
 
 	public function isAuthorized() {
-		return strlen($this->ShopifyAuth->shop_domain) > 0 && strlen($this->ShopifyAuth->token) > 0;
+		return $this->is_private_app ||
+			(strlen($this->ShopifyAuth->shop_domain) > 0 && strlen($this->ShopifyAuth->token) > 0);
 	}
 	
 	public function callsMade()
@@ -42,7 +43,8 @@ class ShopifyAPIComponent extends Component {
 		if (!$this->isAuthorized())
 			return;
 		$password = $this->is_private_app ? $this->secret : md5($this->secret.$this->ShopifyAuth->token);
-		$baseurl = "https://{$this->api_key}:$password@{$this->ShopifyAuth->shop_domain}/";
+		$shop_domain = $this->is_private_app ? $this->shop_domain : $this->ShopifyAuth->shop_domain;
+		$baseurl = "https://{$this->api_key}:$password@$shop_domain/";
 	
 		$url = $baseurl.ltrim($path, '/');
 		$query = in_array($method, array('GET','DELETE')) ? $params : array();

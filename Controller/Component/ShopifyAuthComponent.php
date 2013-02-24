@@ -18,42 +18,43 @@ class ShopifyAuthComponent extends Component {
 	}
 
 	function initialize(&$controller) {
-
-		if ($this->Session->check('shopify.shop_domain')) {
- 			$shop_domain = $this->Session->read('shopify.shop_domain');
-			$token = $this->Session->read('shopify.token');
-			$signature = $this->Session->read('shopify.signature');
-			$timestamp = $this->Session->read('shopify.timestamp');
-			$this->isAuthorized = $this->_isAuthorized($shop_domain, $token, $signature, $timestamp);
-			if ($this->isAuthorized) {
-				$this->shop_domain = $shop_domain;
-				$this->token = $token;
-			} else {
-				$this->logout();
-			}
-		}
-		if (!$this->isAuthorized) {
-			if (isset($_GET['shop']) && isset($_GET['t']) && isset($_GET['signature']) && isset($_GET['timestamp'])) {
-	 			$shop_domain = $_GET['shop'];
-				$token = $_GET['t'];
-				$signature = $_GET['signature'];
-				$timestamp = $_GET['timestamp'];
+		if (!Configure::read("Shopify.is_private_app")) {
+			if ($this->Session->check('shopify.shop_domain')) {
+				$shop_domain = $this->Session->read('shopify.shop_domain');
+				$token = $this->Session->read('shopify.token');
+				$signature = $this->Session->read('shopify.signature');
+				$timestamp = $this->Session->read('shopify.timestamp');
 				$this->isAuthorized = $this->_isAuthorized($shop_domain, $token, $signature, $timestamp);
 				if ($this->isAuthorized) {
-					$this->logout();
-					$this->Session->write('shopify.shop_domain', $shop_domain);
-					$this->Session->write('shopify.token', $token);
-					$this->Session->write('shopify.signature', $signature);
-					$this->Session->write('shopify.timestamp', $timestamp);
 					$this->shop_domain = $shop_domain;
 					$this->token = $token;
+				} else {
+					$this->logout();
 				}
 			}
-		}
+			if (!$this->isAuthorized) {
+				if (isset($_GET['shop']) && isset($_GET['t']) && isset($_GET['signature']) && isset($_GET['timestamp'])) {
+					$shop_domain = $_GET['shop'];
+					$token = $_GET['t'];
+					$signature = $_GET['signature'];
+					$timestamp = $_GET['timestamp'];
+					$this->isAuthorized = $this->_isAuthorized($shop_domain, $token, $signature, $timestamp);
+					if ($this->isAuthorized) {
+						$this->logout();
+						$this->Session->write('shopify.shop_domain', $shop_domain);
+						$this->Session->write('shopify.token', $token);
+						$this->Session->write('shopify.signature', $signature);
+						$this->Session->write('shopify.timestamp', $timestamp);
+						$this->shop_domain = $shop_domain;
+						$this->token = $token;
+					}
+				}
+			}
 
 		// if we are not authorized AND this current controller/view is not excluded from an Auth Check: redirect to install screen
-		if (!$this->isAuthorized && !$this->_excludeCheckOn(&$controller))
-			$controller->redirect(array('controller'=>'install', 'plugin'=>'shopify'));
+			if (!$this->isAuthorized && !$this->_excludeCheckOn(&$controller))
+				$controller->redirect(array('controller'=>'install', 'plugin'=>'shopify'));
+		}
 	}
 
 	public function getAppInstallUrl($shop_domain) {
