@@ -57,7 +57,7 @@ class ShopifyAuthComponent extends Component {
 	}
 
 	public function getAppInstallUrl($shop_domain) {
-		return "http://" . $shop_domain . "/admin/api/auth?api_key=" . Configure::read('api_key');
+		return "http://" . $shop_domain . "/admin/api/auth?api_key=" . Configure::read('Shopify.api_key');
 	}
 
 	public function logout() {
@@ -65,7 +65,7 @@ class ShopifyAuthComponent extends Component {
 	}
 	
 	private function _isAuthorized($shop_domain, $token, $signature, $timestamp) {
-		$secret = Configure::read('shared_secret');
+		$secret = Configure::read('Shopify.shared_secret');
 		return (md5($secret . "shop=" . $shop_domain . "t=" . $token . "timestamp=" . $timestamp) === $signature);
 	}
 

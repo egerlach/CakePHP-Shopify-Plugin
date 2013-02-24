@@ -21,7 +21,7 @@ you should now have these folder:
 
 now you need edit the config file with your Shopify App API info
 
-* open app/Plugin/Shopify/Config/shopify.php
+* open app/Plugin/Shopify/Config/bootstrap.php
 * fill in the api_key and shared_secret
 
 load the plugin and configuration into your CakePHP App
@@ -29,8 +29,7 @@ load the plugin and configuration into your CakePHP App
 * open app/Config/bootstrap.php and add this at the bottom:
 
 ```php
-CakePlugin::load('Shopify');
-Configure::load('Shopify.shopify');
+CakePlugin::load('Shopify' => array('bootstrap' => true));
 ```
 
 ## Usage

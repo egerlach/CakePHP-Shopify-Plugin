@@ -4,14 +4,18 @@ class ShopifyAPIComponent extends Component {
 	private $api_key;
 	private $secret;
 	private $is_private_app;
+	private $shop_domain;
 	private $last_response_headers = null;
 
 	public function __construct(&$controller, $settings=array()) {
 		parent::__construct($controller, $settings);
 		$this->name = "ShopifyAPI";
-		$this->api_key = Configure::read('api_key');
-		$this->secret = Configure::read('shared_secret');
-		$this->is_private_app = Configure::read('is_private_app');
+		$this->api_key = Configure::read('Shopify.api_key');
+		$this->secret = Configure::read('Shopify.shared_secret');
+		$this->is_private_app = Configure::read('Shopify.is_private_app');
+		if($this->is_private_app) {
+			$this->shop_domain = Configure::read('Shopify.shop_domain');
+		}
 	}
 
 	public function isAuthorized() {
